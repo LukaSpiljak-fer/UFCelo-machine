@@ -8,29 +8,40 @@ import locale
 import time
 
 
-def RejectCookies():
-    WebDriverWait(driver, 5).until(                    #Reject all cookies
-    EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Accept all')]"))
-    )
+def RejectCookies():                    #reject cookies svaki put kad se promjeni stranica
     try:
-        driver.find_element(By.XPATH, "//*[contains(text(), 'Accept all')]").click()
+        WebDriverWait(driver, 7).until(
+        EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Reject all')]"))
+        )
+        driver.find_element(By.XPATH, "//*[contains(text(), 'Reject all')]").click()
     except:
         pass
 
 def DateIsPast(eventDate):
-    date_format = "%A, %B %d, %Y"
-    eventDate = datetime.strptime(eventDate, date_format)
-    currDate = datetime.now()
-    return eventDate < currDate
+    global checkTime
+    try:
+        date_format = "%A, %B %d, %Y"
+        eventDate = datetime.strptime(eventDate, date_format)
+        currDate = datetime.now()
+        return eventDate < currDate
+    except:                             #ponekad je datum u drukcijem formatu, zato treba provjerit posebno
+        print("PROVJERI DATUM: ", eventDate)
+        return True
+    
 
 
-csvFile = open("D:\\UFCELOMDB\\allFightHistory.txt", "w")
+
+
+csvFile = open("D:\\UFCELOMDB\\allFightHistory2.txt", "w", encoding='utf-8', newline='')
 data = ""
 site = 'https://www.tapology.com/fightcenter/promotions/1-ultimate-fighting-championship-ufc'
 service = Service(executable_path="./chromedriver/chromedriver.exe")
 driver = webdriver.Chrome(service=service)
 driver.get(site)
 
+eventDate = "no"
+checkTime = False
+finished = False
 
 
 RejectCookies()
@@ -42,44 +53,49 @@ try:
 except:
     print("failed to load main page")      #goto last site
 
-try:
-    while True:
-        RejectCookies()
 
-        content = driver.find_element(By.ID, "content")
+while True:
+    RejectCookies()
+    content = driver.find_element(By.ID, "content")
 
-        pageEvents = content.find_elements(By.CSS_SELECTOR, ".div.flex.flex-col.border-b.border-solid.border-neutral-700")
+    pageEvents = content.find_elements(By.CSS_SELECTOR, "div.flex.flex-col.border-b.border-solid.border-neutral-700")
 
-        for event in reversed(pageEvents):      #ide po redu po eventima unatrag
-            eventDetails = event.find_element(By.CSS_SELECTOR, ".promotion.flex.flex-wrap.items-center.leading-6.whitespace-nowrap.overflow-hidden")
-            
-            eventName = eventDetails.find_element(By.CSS_SELECTOR, ".border-b.border-tap_3.border-dotted.hover\\:border-solid")
-            eventDate = eventDetails.find_elements(By.TAG_NAME, "span")[3].text
 
-            if(DateIsPast(eventDate)):          #provjerava jel se event dogodil, ak je ide na stranicu eventa
-                eventName.click()
-                RejectCookies()
+    for event in reversed(pageEvents):      #ide po redu po eventima unatrag
+        eventDetails = event.find_element(By.CSS_SELECTOR, ".promotion.flex.flex-wrap.items-center.leading-6.whitespace-nowrap.overflow-hidden")
+        eventDate = eventDetails.find_elements(By.TAG_NAME, "span")[3].text
 
-                fightCardDiv = driver.find_element(By.ID, "sectionFightCard")
-                fightCard = fightCardDiv.find_elements(By.TAG_NAME, "li")
+        if(DateIsPast(eventDate)):          #provjerava jel se event dogodil
 
-                for fight in reversed(fightCard):
-                    fighter1 = fight.find_elements(By.CLASS_NAME, "link-primary-red")[0].text
-                    fighter2 = fight.find_elements(By.CLASS_NAME, "link-primary-red")[2].text
-                    data += fighter1 + "-" + fighter2 + ","
+            try:
+                fightCard = event.find_element(By.CSS_SELECTOR, "div.w-full.mb-6")
+                fightsOnCard = fightCard.find_elements(By.CSS_SELECTOR, "div.flex.h-12.md\\:h-10.bg-white.even\\:bg-neutral-100.w-full.items-center.justify-start.md\\:px-1")
 
-                
-                driver.back()
-                RejectCookies()
-            else:
-                csvFile.write(data)             #ako se fight jos nije dogodil to znaci da smo gotovi lets go
-                print("FINISHED!")
-                break
-        csvFile.write(data)
+                for fight in reversed(fightsOnCard):
+                    fightDetails = fight.find_element(By.CSS_SELECTOR, "div.flex.items-center.justify-start.gap-1.md\\:gap-1\\.5.text-neutral-700")
+                    try:
+                        outcomeLayer = fightDetails.find_element(By.TAG_NAME, "div")
+                        outcome = outcomeLayer.find_element(By.TAG_NAME, "span").get_attribute("innerHTML")
+                    except:
+                        break
+                    fighters = fightDetails.find_elements(By.CLASS_NAME, "link-primary-red")
+                    fighter1 = fighters[0].get_attribute("innerHTML")
+                    fighter2 = fighters[1].get_attribute("innerHTML")
+                    data += outcome + "," + fighter1 + "," + fighter2 + "\n"
+            except:
+                print("Greska datum: " + eventDate)
+
+
+        else:
+            print("FINISHED!")
+            csvFile.write(data)             #ako se fight jos nije dogodil, to znaci da smo gotovi posto idemo unatrag
+            finished = True
+            break
+
+    if(not finished):
         try:
             driver.find_element(By.XPATH, '//*[@rel="prev"]').click()
         except:
             break
 
-except Exception as e:
-    print("Error in scraping:", e)
+csvFile.write(data)
