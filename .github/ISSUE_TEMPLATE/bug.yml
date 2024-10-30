@@ -31,6 +31,6 @@ body:
     attributes:
       label: "Detailed description of the bug"
       description: "Describe what went wrong"
-      placeholder: "It just ain't workin'
+      placeholder: "It just ain't workin'"
     validations:
       required: false
