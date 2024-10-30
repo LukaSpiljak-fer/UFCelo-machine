@@ -48,4 +48,4 @@ body:
       description: Apply correct lables?
       options:
         - label: I applied the correct lables
-        required: true
+          required: true
