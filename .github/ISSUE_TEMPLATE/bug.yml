@@ -6,7 +6,7 @@ labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: Please give info on the bug you encountered:
+      value: "Please give info on the bug you encountered:"
       
   - type: input
     id: summary
