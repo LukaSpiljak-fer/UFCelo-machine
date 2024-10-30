@@ -5,11 +5,11 @@ labels: ["bug"]
 
 body:
   - type: checkboxes
-  attributes:
-    description:  Is there an existing issue for this?
-    options:
-      label: I have searched the existing issues
-      required: true
+    attributes:
+      description:  Is there an existing issue for this?
+      options:
+        label: I have searched the existing issues
+        required: true
   
 
   - type: markdown
