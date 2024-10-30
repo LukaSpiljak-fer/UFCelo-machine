@@ -4,6 +4,14 @@ title: "[Bug]: "
 labels: ["bug"]
 
 body:
+  - type: checkboxes
+  attributes:
+    description:  Is there an existing issue for this?
+    options:
+      - label: I have searched the existing issues
+        required: true
+  
+
   - type: markdown
     attributes:
       value: "Please give info on the bug you encountered:"
@@ -34,3 +42,7 @@ body:
       placeholder: "It just ain't workin'"
     validations:
       required: false
+
+  - type: checkboxes
+    attributes:
+      label: "
