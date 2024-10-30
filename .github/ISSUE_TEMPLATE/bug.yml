@@ -7,11 +7,9 @@ body:
   - type: checkboxes
     attributes:
       label: Is there an existing issue for this?
-      description:  Is there an existing issue for this?
       options:
         - label: I have searched the existing issues
           required: true
-  
 
   - type: markdown
     attributes:
@@ -47,7 +45,6 @@ body:
   - type: checkboxes
     attributes:
       label: Have you applied the correct lables?
-      description: Apply correct lables?
       options:
         - label: I applied the correct lables
           required: true
