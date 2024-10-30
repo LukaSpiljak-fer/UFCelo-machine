@@ -6,9 +6,8 @@ labels: ["bug"]
 body:
   - type: markdown
     attributes:
-      value: |
-        Thank you for helping us improve! Please complete the following sections as thoroughly as possible to assist us in diagnosing the issue.
-
+      value: Please give info on the bug you encountered:
+      
   - type: input
     id: summary
     attributes:
@@ -26,3 +25,12 @@ body:
       placeholder: "1. Go to...\n2. Click on...\n3. Observe..."
     validations:
       required: true
+      
+  - type: textarea
+    id: explanation
+    attributes:
+      label: "Detailed description of the bug"
+      description: "Describe what went wrong"
+      placeholder: "It just ain't workin'
+    validations:
+      required: false
