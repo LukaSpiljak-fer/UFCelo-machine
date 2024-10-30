@@ -8,7 +8,7 @@ body:
     attributes:
       description:  Is there an existing issue for this?
       options:
-        label: I have searched the existing issues
+        - label: I have searched the existing issues
         required: true
   
 
@@ -47,5 +47,5 @@ body:
     attributes:
       description: Apply correct lables?
       options:
-        label: I applied the correct lables
+        - label: I applied the correct lables
         required: true
