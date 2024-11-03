@@ -3,7 +3,7 @@ import math
 
 def findFighterElo(fightersList, name):
     for fighter in fightersList:
-        if fighter[0] == name:
+        if fighter[0].upper() == name.upper():
             return fighter[1]
     return 0
 
